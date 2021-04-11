@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.numbersector.exception.NumberNotValidException;
 import org.springframework.stereotype.Component;
 
 import com.numbersector.model.InputNumbers;
@@ -65,7 +66,6 @@ public class NumberHelper {
 				return number;
 			}
 		}
-
 		return EMPTY_STRING;
 	}
 
@@ -87,13 +87,16 @@ public class NumberHelper {
 		}
 	}
 
-	public Map<String, List<String>> createPrefixNumberList(InputNumbers items) {
+	public Map<String, List<String>> createPrefixNumberList(InputNumbers items) throws NumberNotValidException {
 		Map<String, List<String>> validNumbers = new HashMap<String, List<String>>();
 		for (String number : items.getItems()) {
 			String reduceNumber = validateNumber(number);
 			if (!reduceNumber.isEmpty()) {
 				findPrefix(number, reduceNumber, validNumbers);
 			}
+		}
+		if(validNumbers.isEmpty()){
+			throw new NumberNotValidException("The list contains no valid numbers");
 		}
 		return validNumbers;
 	}

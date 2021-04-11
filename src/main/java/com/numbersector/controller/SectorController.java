@@ -22,35 +22,18 @@ import com.numbersector.util.NumberHelper;
 @RestController
 public class SectorController {
 
-	@Autowired
-	private NumberHelper numberHelper;
+	private final NumberHelper numberHelper;
+	private final SectorService sectorService;
 
-	@Autowired
-	private SectorService sectorService;
+	public SectorController(NumberHelper numberHelper, SectorService sectorService){
+		this.numberHelper = numberHelper;
+		this.sectorService = sectorService;
+	}
 
 	@PostMapping("/aggregate")
 	public Map<String, Map<String, Integer>> aggregate(@RequestBody InputNumbers items)
 			throws NumberNotValidException, SectorRequestException, NumberNullOrEmptyException {
 		Map<String, List<String>> numbersList = numberHelper.createPrefixNumberList(items);
-		if (numbersList.isEmpty()) {
-			throw new NumberNotValidException("The list contains no valid numbers");
-		}
 		return sectorService.getSectors(numbersList);
-	}
-
-	@ExceptionHandler
-	public ResponseEntity<SectorErrorResponse> handleNumberNotValidException(NumberNotValidException ex) {
-		SectorErrorResponse error = new SectorErrorResponse();
-		error.setStatus(HttpStatus.BAD_REQUEST.value());
-		error.setMessage(ex.getMessage());
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler
-	public ResponseEntity<SectorErrorResponse> handleSectorRequestException(SectorRequestException ex) {
-		SectorErrorResponse error = new SectorErrorResponse();
-		error.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
-		error.setMessage(ex.getMessage());
-		return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
 	}
 }
