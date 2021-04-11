@@ -43,10 +43,9 @@ public class SectorControllerTest {
 	public void aggregateShouldReturnSuccess() throws Exception {
 		String URL = "/aggregate";
 
-		Map<String, List<String>> mockMap = new HashMap<String, List<String>>();
-		List<String> fakeList = new ArrayList<String>();
-		fakeList.add("+1983236248");
-		mockMap.put("1", fakeList);
+		Map<String,String> mockMap = new HashMap<>();
+		List<String> fakeList = new ArrayList<>();
+		mockMap.put("1", "+1983236248");
 		Mockito.when(numberHelper.createPrefixNumberList(Mockito.any((InputNumbers.class)))).thenReturn(mockMap);
 
 		InputNumbers input = new InputNumbers();
@@ -64,7 +63,7 @@ public class SectorControllerTest {
 	public void aggregateShouldThrowNumberNotValidException() throws Exception {
 		String URL = "/aggregate";
 
-		Map<String, List<String>> mockMap = new HashMap<String, List<String>>();
+		Map<String,String> mockMap = new HashMap<>();
 		Mockito.when(numberHelper.createPrefixNumberList(Mockito.any((InputNumbers.class)))).thenReturn(mockMap);
 
 		InputNumbers input = new InputNumbers();

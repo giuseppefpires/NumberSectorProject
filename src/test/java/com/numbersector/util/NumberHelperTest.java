@@ -72,7 +72,7 @@ public class NumberHelperTest {
 	public void findPrefixWithSuccess() {
 		String originalNumber = "+1 7490276403";
 		String number = "17490276403";
-		Map<String, List<String>> validNumbers = new HashMap<>();
+		Map<String, String> validNumbers = new HashMap<>();
 		numberHelper.findPrefix(originalNumber, number, validNumbers);
 		assertFalse(validNumbers.isEmpty());
 	}
@@ -81,19 +81,12 @@ public class NumberHelperTest {
 	public void findPrefixWithInvalidPrefix() {
 		String originalNumber = "+4 5790276403";
 		String number = "45790276403";
-		Map<String, List<String>> validNumbers = new HashMap<>();
+		Map<String, String> validNumbers = new HashMap<>();
 		numberHelper.findPrefix(originalNumber, number, validNumbers);
 		assertTrue(validNumbers.isEmpty());
 		
 	}
 
-	
-	/**
-	 * Create Prefix Number List tests
-	 */
-
-	// e depois, pra o metodo: "createPrefixNumberList"
-	
 	@Test
 	public void createPrefixNumberListWithSuccess() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
@@ -101,13 +94,12 @@ public class NumberHelperTest {
 		items.add("+1983236248");
 		input.setItems(items);
 		
-		Map<String, List<String>> expectedResult = new HashMap<>();
+		Map<String,String> expectedResult = new HashMap<>();
 		
 		ArrayList<String> list = new ArrayList<>();
-		list.add("+1983236248");
-		expectedResult.put("1", list);
+		expectedResult.put("1", "+1983236248");
 		
-		Map<String, List<String>> result = numberHelper.createPrefixNumberList(input);
+		Map<String,String> result = numberHelper.createPrefixNumberList(input);
 		
 		assertEquals(expectedResult, result);
 	}
@@ -119,13 +111,11 @@ public class NumberHelperTest {
 		items.add("+ 1983B6248A");
 		input.setItems(items);
 		
-		Map<String, List<String>> expectedResult = new HashMap<String, List<String>>();
-		
+		Map<String,String> expectedResult = new HashMap<>();
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("+1983236248");
-		expectedResult.put("1", list);
+		expectedResult.put("1", "+1983236248");
 		
-		Map<String, List<String>> result = numberHelper.createPrefixNumberList(input);
+		Map<String,String> result = numberHelper.createPrefixNumberList(input);
 		
 		assertNotEquals(expectedResult, result);
 	}
@@ -136,8 +126,7 @@ public class NumberHelperTest {
 		List<String> items = new ArrayList<String>();
 		items.add("");
 		input.setItems(items);
-		
-		Map<String, List<String>> result = numberHelper.createPrefixNumberList(input);
+		Map<String,String> result = numberHelper.createPrefixNumberList(input);
 		
 		assertTrue(result.isEmpty());
 	}
@@ -148,10 +137,8 @@ public class NumberHelperTest {
 		List<String> items = new ArrayList<String>();
 		items.add(null);
 		input.setItems(items);
-		
-		Map<String, List<String>> result = numberHelper.createPrefixNumberList(input);
+		Map<String,String> result = numberHelper.createPrefixNumberList(input);
 		
 		assertTrue(result.isEmpty());
 	}
-
 }

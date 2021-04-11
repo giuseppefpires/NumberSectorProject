@@ -1,26 +1,15 @@
 package com.numbersector.util;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.numbersector.exception.NumberNotValidException;
 import org.springframework.stereotype.Component;
-
 import com.numbersector.model.InputNumbers;
 
 @Component
 public class NumberHelper {
 
-	private static final String PREFIXES_FILE_PATH = "src/main/resources/static/prefixes.txt";
+
 	private static final String PLUS_CHAR = "+";
 	private static final String SPACE_CHAR = " ";
 	private static final String ZERO_PREFIX = "00";
@@ -31,24 +20,10 @@ public class NumberHelper {
 	private static final int LOWER_BOUNDARY_NUMBER = 6;
 	private static final int HIGHER_BOUNDARY_NUMBER = 13;
 
-	private Set<String> prefixList = new HashSet<>();
-
-	public NumberHelper() throws IOException {
-		InputStream file = new FileInputStream(PREFIXES_FILE_PATH);
-		BufferedReader buf = new BufferedReader(new InputStreamReader(file));
-		String line = buf.readLine();
-		while (line != null) {
-			this.prefixList.add(line);
-			line = buf.readLine();
-		}
-		buf.close();
-	}
-
 	public String validateNumber(String number) {
 		if(number == null) {
 			return EMPTY_STRING;
 		}
-		
 		if (number.startsWith(PLUS_CHAR)) {
 			number = number.substring(1);
 		} else if (number.startsWith(ZERO_PREFIX)) {
@@ -69,35 +44,40 @@ public class NumberHelper {
 		return EMPTY_STRING;
 	}
 
-	public void findPrefix(String originalNumber, String number, Map<String, List<String>> validNumbers) {
-		List<String> list;
-		for (String prefix : prefixList) {
-			if (number.startsWith(prefix)) {
-				if (validNumbers.containsKey(prefix)) {
-					list = validNumbers.get(prefix);
-					list.add(originalNumber);
-					validNumbers.put(prefix, list);
-				} else {
-					list = new ArrayList<String>();
-					list.add(originalNumber);
-					validNumbers.put(prefix, list);
-				}
-				return;
+	public void findPrefix(String originalNumber, String reduceNumber, Map<String, String> validNumbers) {
+		for (String prefix :PrefixListLoader.prefixList ) {
+			if (reduceNumber.startsWith(prefix)) {
+				validNumbers.put(originalNumber,prefix);
 			}
 		}
 	}
 
-	public Map<String, List<String>> createPrefixNumberList(InputNumbers items) throws NumberNotValidException {
-		Map<String, List<String>> validNumbers = new HashMap<String, List<String>>();
-		for (String number : items.getItems()) {
-			String reduceNumber = validateNumber(number);
+	public Map<String, String> createPrefixNumberList(InputNumbers items) throws NumberNotValidException {
+		Map<String, String> validNumbers = new HashMap<>();
+		for (String originalNumber : items.getItems()) {
+			String reduceNumber = validateNumber(originalNumber);
 			if (!reduceNumber.isEmpty()) {
-				findPrefix(number, reduceNumber, validNumbers);
+				findPrefix(originalNumber, reduceNumber, validNumbers);
 			}
 		}
 		if(validNumbers.isEmpty()){
 			throw new NumberNotValidException("The list contains no valid numbers");
 		}
 		return validNumbers;
+	}
+
+	public Map<String, Map<String, Integer>> mountResponse(Map<String,String> numbersMap, Map<String,String> sectorsMap){
+
+		Map<String, Map<String, Integer>> response = new HashMap<>();
+
+		for (String number : numbersMap.keySet()){
+			String prefix = numbersMap.get(number);
+			String sector = sectorsMap.get(number);
+			Map<String, Integer> sectors = new HashMap<>();
+			sectors.put(sector, sectors.getOrDefault(sector,0)+ 1);
+			response.put(prefix, sectors);
+		}
+
+		return response;
 	}
 }

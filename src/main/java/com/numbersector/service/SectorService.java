@@ -1,14 +1,10 @@
 package com.numbersector.service;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.numbersector.exception.NumberNullOrEmptyException;
 import com.numbersector.exception.SectorRequestException;
 import com.numbersector.model.SectorResponse;
 import com.numbersector.proxy.GetSectorProxy;
@@ -16,33 +12,31 @@ import com.numbersector.proxy.GetSectorProxy;
 @Service
 public class SectorService {
 
+	private final GetSectorProxy getSectorProxy;
+
 	@Autowired
-	private GetSectorProxy getSectorProxy;
-	
-	public Map<String, Map<String, Integer>> getSectors(Map<String, List<String>> numbers)
-			throws SectorRequestException, NumberNullOrEmptyException {
-		
-		if(numbers == null || numbers.isEmpty()) {
-			throw new NumberNullOrEmptyException("Number cannot be empty");
-		}
-		
-		Map<String, Map<String, Integer>> sectors = new TreeMap<>();
+	public SectorService(GetSectorProxy getSectorProxy){
+		this.getSectorProxy = getSectorProxy;
+	}
 
-		for (String pref : numbers.keySet()) {
-			List<String> numberList = numbers.get(pref);
-			Map<String, Integer> sector = new TreeMap<>();
+	public Map<String, String> getSectors(Map<String, String> numbers)
+			throws SectorRequestException{
 
-			for (String number : numberList) {
-				sectorLookup(number, sector);
+		Map<String, String> sectors = new HashMap<>();
+
+		for (String number : numbers.keySet()) {
+			String sector = sectorLookup(number);
+			sectors.put(number,sector);
 			}
-			sectors.put(pref, sector);
-		}
+
 		return sectors;
 	}
 
-	protected void sectorLookup(String number, Map<String, Integer> sector) throws SectorRequestException {
+	protected String sectorLookup(String number) throws SectorRequestException {
 		ResponseEntity<SectorResponse> sectorResponse = getSectorProxy.execute(new SectorResponse(), number);
-		SectorResponse response = sectorResponse.getBody();
-		sector.put(response.getSector(), sector.getOrDefault(response.getSector(), 0) + 1);
+		if(sectorResponse.getBody()!= null){
+			return sectorResponse.getBody().getSector();
+		}
+		return "";
 	}
 }
