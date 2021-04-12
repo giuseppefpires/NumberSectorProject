@@ -44,26 +44,32 @@ public class NumberHelper {
 		return EMPTY_STRING;
 	}
 
-	public void findPrefix(String originalNumber, String reduceNumber, Map<String, String> validNumbers) {
+	public void findPrefix(Map<String, String> validNumbers, Map<String, String> result) {
 		for (String prefix :PrefixListLoader.prefixList ) {
-			if (reduceNumber.startsWith(prefix)) {
-				validNumbers.put(originalNumber,prefix);
+			for (String reduceNumber: validNumbers.keySet()){
+				if (reduceNumber.startsWith(prefix)) {
+					result.put(validNumbers.get(reduceNumber),prefix);
+					validNumbers.remove(reduceNumber);
+				}
 			}
 		}
 	}
 
 	public Map<String, String> createPrefixNumberList(InputNumbers items) throws NumberNotValidException {
 		Map<String, String> validNumbers = new HashMap<>();
+		Map<String, String> result = new HashMap<>();
 		for (String originalNumber : items.getItems()) {
 			String reduceNumber = validateNumber(originalNumber);
 			if (!reduceNumber.isEmpty()) {
-				findPrefix(originalNumber, reduceNumber, validNumbers);
+				validNumbers.put(reduceNumber,originalNumber);
 			}
 		}
-		if(validNumbers.isEmpty()){
+		findPrefix(validNumbers,result);
+
+		if(result.isEmpty()){
 			throw new NumberNotValidException("The list contains no valid numbers");
 		}
-		return validNumbers;
+		return result;
 	}
 
 	public Map<String, Map<String, Integer>> mountResponse(Map<String,String> numbersMap, Map<String,String> sectorsMap){

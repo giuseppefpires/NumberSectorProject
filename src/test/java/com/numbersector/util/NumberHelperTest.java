@@ -3,7 +3,6 @@ package com.numbersector.util;
 import com.numbersector.exception.NumberNotValidException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import com.numbersector.model.InputNumbers;
 
 import java.io.IOException;
@@ -11,16 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NumberHelperTest {
 
 	private static NumberHelper numberHelper;
+	private static PrefixListLoader prefixListLoader;
 
 	@BeforeAll
 	public static void setUpTests() throws IOException {
 		numberHelper = new NumberHelper();
+		prefixListLoader = new PrefixListLoader();
 	}
 
 	/**
@@ -57,9 +57,8 @@ public class NumberHelperTest {
 
 	@Test
 	public void validateNumberWithNullNumber() {
-		String number = null;
 		String expectedResult = "";
-        String result = numberHelper.validateNumber(number);
+        String result = numberHelper.validateNumber(null);
 
         assertEquals(expectedResult, result);	
 	}
@@ -69,38 +68,15 @@ public class NumberHelperTest {
 	 */
 
 	@Test
-	public void findPrefixWithSuccess() {
-		String originalNumber = "+1 7490276403";
-		String number = "17490276403";
-		Map<String, String> validNumbers = new HashMap<>();
-		numberHelper.findPrefix(originalNumber, number, validNumbers);
-		assertFalse(validNumbers.isEmpty());
-	}
-	
-	@Test
-	public void findPrefixWithInvalidPrefix() {
-		String originalNumber = "+4 5790276403";
-		String number = "45790276403";
-		Map<String, String> validNumbers = new HashMap<>();
-		numberHelper.findPrefix(originalNumber, number, validNumbers);
-		assertTrue(validNumbers.isEmpty());
-		
-	}
-
-	@Test
 	public void createPrefixNumberListWithSuccess() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
 		List<String> items = new ArrayList<>();
 		items.add("+1983236248");
 		input.setItems(items);
-		
 		Map<String,String> expectedResult = new HashMap<>();
-		
-		ArrayList<String> list = new ArrayList<>();
-		expectedResult.put("1", "+1983236248");
-		
+		expectedResult.put("+1983236248","1");
 		Map<String,String> result = numberHelper.createPrefixNumberList(input);
-		
+
 		assertEquals(expectedResult, result);
 	}
 	
@@ -110,35 +86,33 @@ public class NumberHelperTest {
 		List<String> items = new ArrayList<>();
 		items.add("+ 1983B6248A");
 		input.setItems(items);
-		
 		Map<String,String> expectedResult = new HashMap<>();
-		ArrayList<String> list = new ArrayList<String>();
 		expectedResult.put("1", "+1983236248");
-		
-		Map<String,String> result = numberHelper.createPrefixNumberList(input);
-		
-		assertNotEquals(expectedResult, result);
+		assertThrows(NumberNotValidException.class, () -> {
+			numberHelper.createPrefixNumberList(input);
+		});
 	}
 	
 	@Test
 	public void createPrefixNumberListWithEmptyNumber() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
-		List<String> items = new ArrayList<String>();
+		List<String> items = new ArrayList<>();
 		items.add("");
 		input.setItems(items);
-		Map<String,String> result = numberHelper.createPrefixNumberList(input);
-		
-		assertTrue(result.isEmpty());
+
+		assertThrows(NumberNotValidException.class, () -> {
+			numberHelper.createPrefixNumberList(input);
+		});
 	}
 	
 	@Test
 	public void createPrefixNumberListWithNullNumber() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
-		List<String> items = new ArrayList<String>();
+		List<String> items = new ArrayList<>();
 		items.add(null);
 		input.setItems(items);
-		Map<String,String> result = numberHelper.createPrefixNumberList(input);
-		
-		assertTrue(result.isEmpty());
+		assertThrows(NumberNotValidException.class, () -> {
+			numberHelper.createPrefixNumberList(input);
+		});
 	}
 }
