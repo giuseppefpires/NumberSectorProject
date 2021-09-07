@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NumberHelperTest {
+class NumberHelperTest {
 
 	private static NumberHelper numberHelper;
 	private static PrefixListLoader prefixListLoader;
 
 	@BeforeAll
-	public static void setUpTests() throws IOException {
+	static void setUpTests() throws IOException {
 		numberHelper = new NumberHelper();
 		prefixListLoader = new PrefixListLoader();
 	}
@@ -28,7 +28,7 @@ public class NumberHelperTest {
 	 */
 
 	@Test
-	public void validateNumberWithSuccess() {
+	void validateNumberWithSuccess() {
 		String number = "+1983236248";
 		String expectedResult = "1983236248";
         String result = numberHelper.validateNumber(number);
@@ -37,7 +37,7 @@ public class NumberHelperTest {
 	}
 
 	@Test
-	public void validateNumberWithInvalidNumber() {
+	void validateNumberWithInvalidNumber() {
 		String number = "+1983236248A";
 		String expectedResult = "";
         String result = numberHelper.validateNumber(number);
@@ -47,7 +47,7 @@ public class NumberHelperTest {
 	}
 
 	@Test
-	public void validateNumberWithEmptyNumber() {
+	void validateNumberWithEmptyNumber() {
 		String number = "";
 		String expectedResult = "";
         String result = numberHelper.validateNumber(number);
@@ -56,7 +56,7 @@ public class NumberHelperTest {
 	}
 
 	@Test
-	public void validateNumberWithNullNumber() {
+	void validateNumberWithNullNumber() {
 		String expectedResult = "";
         String result = numberHelper.validateNumber(null);
 
@@ -68,7 +68,7 @@ public class NumberHelperTest {
 	 */
 
 	@Test
-	public void createPrefixNumberListWithSuccess() throws NumberNotValidException {
+	void createPrefixNumberListWithSuccess() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
 		List<String> items = new ArrayList<>();
 		items.add("+1983236248");
@@ -81,7 +81,7 @@ public class NumberHelperTest {
 	}
 	
 	@Test
-	public void createPrefixNumberListWithInvalidNumber() throws NumberNotValidException {
+	void createPrefixNumberListWithInvalidNumber() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
 		List<String> items = new ArrayList<>();
 		items.add("+ 1983B6248A");
@@ -94,7 +94,7 @@ public class NumberHelperTest {
 	}
 	
 	@Test
-	public void createPrefixNumberListWithEmptyNumber() throws NumberNotValidException {
+	void createPrefixNumberListWithEmptyNumber() throws NumberNotValidException {
 		InputNumbers input = new InputNumbers();
 		List<String> items = new ArrayList<>();
 		items.add("");
